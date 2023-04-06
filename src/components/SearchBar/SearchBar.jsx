@@ -2,7 +2,7 @@ import './SearchBar.css'
 
 const SearchBar = () => {
     return(
-        <nav className="navbar">
+        <nav className="navbar mb-2">
         <div className="container-fluid d-flex justify-content-center ">
           <form className="d-flex " role="search">
             <input className="form-control " type="search" placeholder="Search" aria-label="Search"/>

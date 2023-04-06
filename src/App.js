@@ -1,5 +1,6 @@
 import './App.css';
 import NavBar from './components/NavBar/NavBar';
+import PostList from './components/PostList/PostList';
 import SearchBar from './components/SearchBar/SearchBar';
 
 function App() {
@@ -7,6 +8,7 @@ function App() {
     <div className="App">
       <NavBar/>
       <SearchBar/>
+      <PostList/>
     </div>
   );
 }
