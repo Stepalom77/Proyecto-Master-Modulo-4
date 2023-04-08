@@ -2,22 +2,14 @@ import './NavBar.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleUser, faBolt } from '@fortawesome/free-solid-svg-icons'
 
-const NavBar = () => {
+const NavBar = ({onLogoClick, onProfileClick}) => {
     return(
         <nav className="navbar navbar-expand-lg bg-light mb-2">
             <div className="container-fluid">
-                <a className="navbar-brand" href='/'> <FontAwesomeIcon icon={faBolt} /> three pics</a>
-                <button className="navbar-toggler border border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" 
-                 aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <button className="navbar-brand border border-0 bg-transparent" href='/' onClick={onLogoClick} > <FontAwesomeIcon icon={faBolt} /> three pics</button>
+                <button className="btn border border-0" type="button" onClick={onProfileClick} >
                     <FontAwesomeIcon icon={faCircleUser} />
                 </button>
-                <div className="collapse navbar-collapse" id="navbarText">
-                    <ul className="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li className="nav-item">
-                            <a className="nav-link active" aria-current="page"  href='/'>Profile</a>
-                        </li>
-                    </ul>
-                </div>
             </div>
         </nav>
     )
