@@ -8,7 +8,7 @@ const PostList = ({posts, hiddenPostListState}) => {
                     <div className='d-flex justify-content-center' key={post.id}>
                         <Post
                         image={post.image}
-                        autor={post.autor}
+                        author={post.author}
                         createdAt={post.createdAt}
                         text={post.text}
                         comments={post.comments}

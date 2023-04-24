@@ -4,48 +4,22 @@ import NavBar from './components/NavBar/NavBar';
 import PostList from './components/PostList/PostList';
 import SearchBar from './components/SearchBar/SearchBar';
 import Profile from './components/Profile/Profile';
+import Login from './components/Login/Login';
+import axios from 'axios';
 
-const postsList = [
-  {
-    id: 1,
-    image: "/img/cliff-ocean.jpg",
-    autor: "ste",
-    createdAt: 2,
-    text: "Este es mi mi primer post, una foto que tome en mi último viaje.",
-    comments: 5,
-  },
-  {
-    id: 2,
-    image: "/img/sorrento-italy.jpg",
-    autor: "user",
-    createdAt: 15,
-    text: "En Sorrento, Italia.",
-    comments: 77,
-  },
-  {
-      id: 3,
-      image: "/img/paris.jpg",
-      autor: "palomino",
-      createdAt: 30,
-      text: "La Torre Eiffel en París",
-      comments: 220,
-    },
-];
-
-const profile = {
-  avatar: "/img/Stephano.jpg",
-  username: "stephano",
-  bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-}
+const apiUrl = 'https://three-points.herokuapp.com/api'
 
 function App() {
-  const [search, setSearch] = useState('')
-  const [posts, setPosts] = useState("Loading...")
+  const [search, setSearch] = useState('');
+  const [posts, setPosts] = useState("Loading...");
   const [filteredPosts, setFilteredPosts] = useState([]);
-  const [postListHidden, setPostListHidden] = useState(false);
-  const [searchBarHidden, setSearchBarHidden] = useState(false);
+  const [postListHidden, setPostListHidden] = useState(true);
+  const [searchBarHidden, setSearchBarHidden] = useState(true);
   const [profileHidden, setProfileHidden] = useState(true);
-  const [profileData, setProfileData] = useState({})
+  const [loginHidden, setLoginHidden] = useState(false);
+  const [profileData, setProfileData] = useState({});
+  const [loginOk, setLoginOk] = useState(false);
+  const [token, setToken] = useState(localStorage.getItem('token'))
 
   const handleSearch = () => {
     const searchedPosts = posts.filter(post => post.text.toLowerCase().includes(search.toLowerCase()));
@@ -58,25 +32,82 @@ function App() {
   };
 
   const onLogoClick = () => {
-    setSearch('');
-    setFilteredPosts([]);
-    setProfileHidden(true)
+    if(loginOk) {
+      setSearch('');
+      setFilteredPosts([]);
+      setProfileHidden(true)
+      setPostListHidden(false)
+      setSearchBarHidden(false)
+    }
+  }
+
+  const postListHiddenState = () => {
+    if(loginOk) {
+      setPostListHidden(true)
+      setSearchBarHidden(true)
+      setProfileHidden(false)
+    }
+  };
+
+  const onLogin = () => {
+    setLoginOk(true)
+    setLoginHidden(true)
     setPostListHidden(false)
     setSearchBarHidden(false)
   }
 
-  const postListHiddenState = () => {
+  const logOut = () => {
+    localStorage.removeItem('token')
+    setLoginOk(false)
+    setLoginHidden(false)
     setPostListHidden(true)
     setSearchBarHidden(true)
-    setProfileHidden(false)
-  };
+    setProfileHidden(true)
+  }
 
   useEffect(() => {
-    const postsTimer = setTimeout(() => {
-      setPosts(postsList)
-    }, 3000)
-    setProfileData(profile)
-    return () => clearTimeout(postsTimer);
+    const handleTokenChange = () => {
+      setToken(localStorage.getItem('token'));
+    };
+    if(token) {
+      setLoginOk(true)
+      setLoginHidden(true)
+      setPostListHidden(false)
+      setSearchBarHidden(false)
+      const postsTimer = setTimeout(() => {
+        axios.get(`${apiUrl}/posts`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        .then(response => {
+          setPosts(response.data);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      }, 3000);
+
+      axios.get(`${apiUrl}/users/6136944fcd79ba24707e2f82`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(response => {
+        setProfileData(response.data)
+      })
+      .catch(error => {
+        console.log(error);
+      });
+      return () => {
+        clearTimeout(postsTimer); 
+      }
+    }
+
+    window.addEventListener('storage', handleTokenChange);
+    return () => {
+      window.removeEventListener('storage', handleTokenChange);};
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -94,8 +125,9 @@ function App() {
     <div className="App">
       <NavBar onLogoClick={onLogoClick} onProfileClick={postListHiddenState} />
       <SearchBar value={search}  onSearch={handleChange} hiddenSearchState={searchBarHidden} />
-      <PostList posts={postList} hiddenPostListState={postListHidden} />
-      <Profile avatar={profileData.avatar} username={profileData.username} bio={profileData.bio} hiddenProfileState={profileHidden}/>
+      <Login hiddenLoginState={loginHidden} onLoginComplete={onLogin}/>
+      {<PostList posts={postList} hiddenPostListState={postListHidden} />}
+      <Profile avatar={profileData.avatar} username={profileData.username} bio={profileData.bio} hiddenProfileState={profileHidden} logOut={logOut}/>
     </div>
   );
 }

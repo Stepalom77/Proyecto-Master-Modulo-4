@@ -3,13 +3,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart, faComment } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react'
 
-const Post = ({ image, autor, createdAt, text, comments }) => {
+const Post = ({ image, author, createdAt, text, comments }) => {
 
     const [likes, setLikes] = useState(0)
 
-    function handleClick() {
+    const handleClick = () => {
         setLikes(likes + 1);
       }
+    
+    const date = new Date(createdAt)
+    const minutes = date.getMinutes()
 
     return(
         <div className="card mb-3" id='card-post'>
@@ -17,7 +20,7 @@ const Post = ({ image, autor, createdAt, text, comments }) => {
             <div className="card-body">
                 <div className="row d-flex justify-content-evenly">
                     <div className="col d-flex justify-content-start">
-                    <h6 className="card-subtitle mb-2 text-muted"> {createdAt}min ago </h6>
+                    <h6 className="card-subtitle mb-2 text-muted"> {minutes}min ago </h6>
                     </div>
                     <div className="col d-flex justify-content-end">
                     <button type="button" className="btn btn-danger btn-sm" onClick={handleClick} > 
@@ -25,10 +28,10 @@ const Post = ({ image, autor, createdAt, text, comments }) => {
                     </button>
                     </div>
                 </div>
-                <h5 className="card-title"> @{autor}</h5>
+                <h5 className="card-title"> @{author.name}</h5>
                 <p className="card-text"> {text} </p>
                 <p className='card-text'> 
-                <FontAwesomeIcon icon={faComment} /> Comments ({comments}) 
+                <FontAwesomeIcon icon={faComment} /> Comments ({comments.length}) 
                 </p>
             </div>
         </div>

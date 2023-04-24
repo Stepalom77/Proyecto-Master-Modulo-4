@@ -1,6 +1,7 @@
 import './Profile.css'
 
-const Profile = ({avatar, username, bio, hiddenProfileState}) => {
+const Profile = ({avatar, username, bio, hiddenProfileState, logOut}) => {
+
     return(
         <div className="container-fluid" hidden={hiddenProfileState}>
             <div className="d-flex justify-content-center">
@@ -9,6 +10,7 @@ const Profile = ({avatar, username, bio, hiddenProfileState}) => {
                     <div className="card-body text-center">
                         <h5 className="card-title"> @{username}</h5>
                         <p className="card-text"> {bio} </p>
+                        <button type='button' className="btn btn-danger" onClick={logOut}>Salir</button>
                     </div>
                 </div>
             </div>
