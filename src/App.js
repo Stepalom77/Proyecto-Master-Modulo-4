@@ -15,7 +15,7 @@ function App() {
   const [posts, setPosts] = useState("Loading...");
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [searchBarHidden, setSearchBarHidden] = useState(true);
-  const [profileData, setProfileData] = useState({});
+  const [currentUser, setCurrentUser] = useState({});
   const [loginOk, setLoginOk] = useState(false);
   const [token, setToken] = useState(localStorage.getItem('token'));
   const navigate = useNavigate();
@@ -74,6 +74,9 @@ function App() {
           setPosts(response.data);
         })
         .catch(error => {
+          localStorage.removeItem('token')
+          setCurrentUser({})
+          navigate('/login')
           console.log(error);
         });
       }, 3000);
@@ -84,9 +87,12 @@ function App() {
         },
       })
       .then(response => {
-        setProfileData(response.data)
+        setCurrentUser(response.data)
       })
       .catch(error => {
+        localStorage.removeItem('token')
+        setCurrentUser({})
+        navigate('/login')
         console.log(error);
       });
       return () => {
@@ -120,7 +126,7 @@ function App() {
       <Routes>
         <Route path="/" element={<PostList posts={postList} />} />
         <Route path="/login" element={<Login onLoginComplete={onLogin} />} />
-        <Route path="/profile" element={<Profile avatar={profileData.avatar} username={profileData.username} bio={profileData.bio} logOut={logOut} />} />
+        <Route path="/profile" element={<Profile avatar={currentUser.avatar} username={currentUser.username} bio={currentUser.bio} logOut={logOut} />} />
       </Routes>
     </div>
   );
