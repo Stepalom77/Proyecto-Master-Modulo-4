@@ -6,6 +6,7 @@ import SearchBar from './components/SearchBar/SearchBar';
 import Profile from './components/Profile/Profile';
 import Login from './components/Login/Login';
 import axios from 'axios';
+import {Routes, Route, useNavigate} from 'react-router-dom';
 
 const apiUrl = 'https://three-points.herokuapp.com/api'
 
@@ -13,13 +14,11 @@ function App() {
   const [search, setSearch] = useState('');
   const [posts, setPosts] = useState("Loading...");
   const [filteredPosts, setFilteredPosts] = useState([]);
-  const [postListHidden, setPostListHidden] = useState(true);
   const [searchBarHidden, setSearchBarHidden] = useState(true);
-  const [profileHidden, setProfileHidden] = useState(true);
-  const [loginHidden, setLoginHidden] = useState(false);
   const [profileData, setProfileData] = useState({});
   const [loginOk, setLoginOk] = useState(false);
-  const [token, setToken] = useState(localStorage.getItem('token'))
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const navigate = useNavigate();
 
   const handleSearch = () => {
     const searchedPosts = posts.filter(post => post.text.toLowerCase().includes(search.toLowerCase()));
@@ -35,34 +34,26 @@ function App() {
     if(loginOk) {
       setSearch('');
       setFilteredPosts([]);
-      setProfileHidden(true)
-      setPostListHidden(false)
-      setSearchBarHidden(false)
+      navigate('/')
     }
   }
 
-  const postListHiddenState = () => {
+  const onProfile = () => {
     if(loginOk) {
-      setPostListHidden(true)
-      setSearchBarHidden(true)
-      setProfileHidden(false)
+      navigate('/profile')
     }
-  };
+  }
 
   const onLogin = () => {
     setLoginOk(true)
-    setLoginHidden(true)
-    setPostListHidden(false)
     setSearchBarHidden(false)
+    navigate('/')
   }
 
   const logOut = () => {
     localStorage.removeItem('token')
     setLoginOk(false)
-    setLoginHidden(false)
-    setPostListHidden(true)
     setSearchBarHidden(true)
-    setProfileHidden(true)
   }
 
   useEffect(() => {
@@ -71,8 +62,7 @@ function App() {
     };
     if(token) {
       setLoginOk(true)
-      setLoginHidden(true)
-      setPostListHidden(false)
+      navigate('/')
       setSearchBarHidden(false)
       const postsTimer = setTimeout(() => {
         axios.get(`${apiUrl}/posts`, {
@@ -102,6 +92,8 @@ function App() {
       return () => {
         clearTimeout(postsTimer); 
       }
+    } else {
+      navigate('/login')
     }
 
     window.addEventListener('storage', handleTokenChange);
@@ -123,11 +115,13 @@ function App() {
 
   return (
     <div className="App">
-      <NavBar onLogoClick={onLogoClick} onProfileClick={postListHiddenState} />
-      <SearchBar value={search}  onSearch={handleChange} hiddenSearchState={searchBarHidden} />
-      <Login hiddenLoginState={loginHidden} onLoginComplete={onLogin}/>
-      {<PostList posts={postList} hiddenPostListState={postListHidden} />}
-      <Profile avatar={profileData.avatar} username={profileData.username} bio={profileData.bio} hiddenProfileState={profileHidden} logOut={logOut}/>
+      <NavBar onLogoClick={onLogoClick} onProfileClick={onProfile} />
+      <SearchBar value={search} onSearch={handleChange} hiddenSearchState={searchBarHidden} />
+      <Routes>
+        <Route path="/" element={<PostList posts={postList} />} />
+        <Route path="/login" element={<Login onLoginComplete={onLogin} />} />
+        <Route path="/profile" element={<Profile avatar={profileData.avatar} username={profileData.username} bio={profileData.bio} logOut={logOut} />} />
+      </Routes>
     </div>
   );
 }

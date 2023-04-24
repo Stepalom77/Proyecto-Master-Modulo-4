@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const Login = ({hiddenLoginState, onLoginComplete}) => {
+const Login = ({onLoginComplete}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -26,7 +26,7 @@ const Login = ({hiddenLoginState, onLoginComplete}) => {
   };
 
   return (
-    <div className="card border border-0" id='login-card' hidden={hiddenLoginState}>
+    <div className="card border border-0" id='login-card'>
         <div className="card-body d-flex justify-content-center">
             <form onSubmit={handleLogin}>
                 {error && (

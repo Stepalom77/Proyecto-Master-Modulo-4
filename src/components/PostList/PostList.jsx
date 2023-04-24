@@ -1,9 +1,9 @@
 import Post from '../Post/Post';
 import './PostList.css'
 
-const PostList = ({posts, hiddenPostListState}) => {
+const PostList = ({posts}) => {
     return(
-        <div className="container-fluid" hidden={hiddenPostListState}>
+        <div className="container-fluid">
                 { Array.isArray(posts) ? (posts.map((post) => (
                     <div className='d-flex justify-content-center' key={post.id}>
                         <Post
